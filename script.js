@@ -3,8 +3,6 @@ for (let i = 0; i < 8; i++) {
     let HTMLRow = document.createElement('div');
     HTMLRow.classList.add('row');
     container.append(document.createElement("div").classList.add('row'));
-
-    // document.createElement('div')
 }
 
 container.append()
