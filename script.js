@@ -1,11 +1,18 @@
-const container = document.querySelector('container');
 for (let i = 0; i < 8; i++) {
-    let HTMLRow = document.createElement('div');
-    HTMLRow.classList.add('row');
-    container.append(document.createElement("div").classList.add('row'));
-}
+    let squaresRow = document.createElement("div");
+    squaresRow.classList.add('row');
+    document.querySelector('.container').append(squaresRow);
 
-container.append()
+    // utworzenie pól
+    let square = document.createElement('div');
+    square.classList.add('square');
+    for (let j = 0; j < 8; j++) {
+        squaresRow.append(document.createElement('div'));
+    }
+
+    // nadanie klas polom
+    squaresRow.querySelectorAll('div').forEach(element => element.classList.add('square'));
+}
 
 const squares = document.querySelectorAll('.square');
 const numOfSquares = squares.length;
@@ -21,9 +28,8 @@ squares.forEach(square => {
         row++; 
         col = 1; 
     }
-    if (Math.round(Math.random())) {
-        square.classList.toggle('bomb');
-    }
+
+    
     square.addEventListener('click', () => {
         if (square.classList.contains('bomb')) {
             if (confirm('you lose!')) {
@@ -33,18 +39,31 @@ squares.forEach(square => {
         else {
             squareRow = parseInt(square.classList[1].charAt(4));
             squareCol = parseInt(square.classList[2].charAt(4));
-
+            
             square.innerHTML = checkBombs(squareRow, squareCol)
         }
     })
     square.addEventListener('contextmenu', (e) => {
         if (square.innerHTML == '')
-            square.innerHTML = 'B'
-        else 
-            square.innerHTML = ''
-        e.preventDefault();
+        square.innerHTML = 'B'
+    else 
+    square.innerHTML = ''
+    e.preventDefault();
     })
 })
+// TODO: powtarzają sie
+for (let i = 0; i < 10; i++) {
+    let x = Math.floor(Math.random() * 8) + 1;
+    let y = Math.floor(Math.random() * 8) + 1;
+    console.log(`${i}: ${x}`)
+    console.log(y)
+    let square = document.querySelector('.container').querySelector('.row-' + x + '.col-' + y);
+    square.classList.toggle('bomb');
+}
+
+
+
+
 
 function checkBombs (x, y) {
     let bombs = 0
