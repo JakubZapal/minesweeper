@@ -1,4 +1,8 @@
-for (let i = 0; i < 8; i++) {
+const rows = 8;
+const cols = 8;
+
+for (let i = 0; i < cols; i++) {
+    // utworzenie wierszy
     let squaresRow = document.createElement("div");
     squaresRow.classList.add('row');
     document.querySelector('.container').append(squaresRow);
@@ -6,7 +10,7 @@ for (let i = 0; i < 8; i++) {
     // utworzenie pól
     let square = document.createElement('div');
     square.classList.add('square');
-    for (let j = 0; j < 8; j++) {
+    for (let j = 0; j < rows; j++) {
         squaresRow.append(document.createElement('div'));
     }
 
@@ -14,13 +18,10 @@ for (let i = 0; i < 8; i++) {
     squaresRow.querySelectorAll('div').forEach(element => element.classList.add('square'));
 }
 
-const squares = document.querySelectorAll('.square');
-const numOfSquares = squares.length;
 let row = 1;
 let col = 1;
-let squareRow = 0;
-let squareCol = 0;
-squares.forEach(square => {
+
+document.querySelectorAll('.square').forEach(square => {
     square.classList.toggle('row-' + row);
     square.classList.toggle('col-' + col);
     col++;
@@ -29,40 +30,48 @@ squares.forEach(square => {
         col = 1; 
     }
 
-    
     square.addEventListener('click', () => {
         if (square.classList.contains('bomb')) {
             if (confirm('you lose!')) {
                 window.location.reload();
             }
-        } 
+        }
         else {
-            squareRow = parseInt(square.classList[1].charAt(4));
-            squareCol = parseInt(square.classList[2].charAt(4));
-            
-            square.innerHTML = checkBombs(squareRow, squareCol)
+            let squareRow = '';
+            let squareCol = '';
+            squareRow = square.classList[1].charAt(4)
+            squareCol = square.classList[2].charAt(4)
+            let bombs = checkBombs(squareRow, squareCol)
+            if (bombs) {
+                square.innerHTML = bombs;
+            }
+            // exposing all squares with no bombs around
+            else {
+                checkNearby(squareRow, squareCol)
+            }
         }
     })
     square.addEventListener('contextmenu', (e) => {
-        if (square.innerHTML == '')
-        square.innerHTML = 'B'
-    else 
-    square.innerHTML = ''
-    e.preventDefault();
+        if (square.innerHTML == '') {
+            square.innerHTML = 'B'
+        } 
+        else {
+            square.innerHTML = ''
+        } 
+        e.preventDefault();
     })
 })
-// TODO: powtarzają sie
 for (let i = 0; i < 10; i++) {
     let x = Math.floor(Math.random() * 8) + 1;
     let y = Math.floor(Math.random() * 8) + 1;
-    console.log(`${i}: ${x}`)
-    console.log(y)
+    if (document.querySelector('.row-' + x + '.col-' + y).classList.contains('bomb')) {
+        i--;
+        continue;
+    }
+    console.log(`${x}, ${y}`) 
     let square = document.querySelector('.container').querySelector('.row-' + x + '.col-' + y);
     square.classList.toggle('bomb');
 }
-
-
-
 
 
 function checkBombs (x, y) {
@@ -90,4 +99,11 @@ function checkBombs (x, y) {
             bombs++
     }
     return bombs;
+}
+// not working yet
+function checkNearby (x, y, previousX = 0, previousY = 0) {
+    if (!checkBombs(x, y)) {
+        document.querySelector('.row-' + x + '.col-' + y).style.background = 'grey';
+        checkNearby(x+1, y+1);
+    }
 }
