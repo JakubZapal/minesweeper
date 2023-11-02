@@ -20,10 +20,10 @@ for (let i = 0; i < cols; i++) {
 
 let row = 1;
 let col = 1;
-
+let i = 1;
 document.querySelectorAll('.square').forEach(square => {
-    square.classList.toggle('row-' + row);
-    square.classList.toggle('col-' + col);
+    square.classList.add('row-' + row, 'col-' + col, 'id-' + i);
+    i++;
     col++;
     if (col % 9 == 0) {
         row++; 
@@ -42,6 +42,7 @@ document.querySelectorAll('.square').forEach(square => {
             squareRow = square.classList[1].charAt(4)
             squareCol = square.classList[2].charAt(4)
             let bombs = checkBombs(squareRow, squareCol)
+            // square.classList.add('checked');
             if (bombs) {
                 square.innerHTML = bombs;
             }
@@ -101,9 +102,48 @@ function checkBombs (x, y) {
     return bombs;
 }
 // not working yet
-function checkNearby (x, y, previousX = 0, previousY = 0) {
-    if (!checkBombs(x, y)) {
-        document.querySelector('.row-' + x + '.col-' + y).style.background = 'grey';
-        checkNearby(x+1, y+1);
+// function checkNearby (x, y) {
+//     // const id = 8 * (x - 1) + y;
+    
+//     if (document.querySelector('.row-' + x + '.col-' + y) !== null) {
+//         if (!checkBombs(x, y)) {
+//             document.querySelector('.row-' + x + '.col-' + y).style.background = 'grey';
+//                 // Sprawdź sąsiednich elementów o 1 mniejszych, większych i tak dalej
+//             for (let i = -1; i <= 1; i++) {
+//                 for (let j = -1; j <= 1; j++) {
+//                     if (i === 0 && j === 0) continue; // Pomijamy ten sam element
+//                     check(wiersz + i, kolumna + j);
+//                 }
+//             }
+//         }
+//     }
+// }
+
+function checkNearby(row, col) {
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        // if (i === 0 && j === 0) {
+        //     continue;
+        // }
+        check(row + i, col + j);
+      }
+    }
+
+    function check(x, y) {
+        const square = document.querySelector('.row-' + x + '.col-' + y);
+    
+        if (square !== null) {
+            console.log('test')
+            if (!square.classList.contains('checked')) {
+            square.classList.add('checked');
+    
+                if (!square.classList.contains('bomb')) {
+                    console.log('xd')
+                    // square.classList.toggle('plain');
+                    square.style.background = 'grey'
+                    checkNearby(x, y);
+                }
+            }
+        }
     }
 }

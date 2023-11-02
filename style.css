@@ -9,3 +9,7 @@
     width: 50px;
     border: solid black 1px;
 }
+
+.plain {
+    background-color: grey;
+}
