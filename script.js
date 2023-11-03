@@ -20,10 +20,8 @@ for (let i = 0; i < cols; i++) {
 
 let row = 1;
 let col = 1;
-let i = 1;
 document.querySelectorAll('.square').forEach(square => {
-    square.classList.add('row-' + row, 'col-' + col, 'id-' + i);
-    i++;
+    square.classList.add('row-' + row, 'col-' + col);
     col++;
     if (col % 9 == 0) {
         row++; 
@@ -37,31 +35,49 @@ document.querySelectorAll('.square').forEach(square => {
             }
         }
         else {
-            let squareRow = '';
-            let squareCol = '';
-            squareRow = square.classList[1].charAt(4)
-            squareCol = square.classList[2].charAt(4)
-            let bombs = checkBombs(squareRow, squareCol)
-            // square.classList.add('checked');
-            if (bombs) {
-                square.innerHTML = bombs;
+            let squareRow = Number(square.classList[1].charAt(4))
+            let squareCol = Number(square.classList[2].charAt(4))
+            console.log(`${squareRow}, ${squareCol}`)
+            const bombs = checkBombs(squareRow, squareCol)
+
+            if (bombs && !square.hasChildNodes()) {
+                const p = document.createElement("p")
+                p.textContent = bombs
+                square.append(p)
             }
+            
             // exposing all squares with no bombs around
             else {
                 checkNearby(squareRow, squareCol)
             }
         }
+        const plainSquares = document.querySelectorAll('.checked');
+        plainSquares.forEach(square => {
+            if (!square.classList.contains('plain')) {
+                const squareRow = Number(square.classList[1].charAt(4))
+                const squareCol = Number(square.classList[2].charAt(4))
+                const bombs = checkBombs(squareRow, squareCol)
+                // TODO: you can click on a cell that has bombs around and it exposes cells with bombs around as well (not as it should)
+                if (bombs && !square.hasChildNodes() && !square.classList.contains('bomb') && !hasPlainAround(squareRow, squareCol)) {
+                    const p = document.createElement("p")
+                    p.textContent = bombs
+                    square.append(p)
+                }
+            }
+        })
     })
     square.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+
         if (square.innerHTML == '') {
             square.innerHTML = 'B'
         } 
         else {
             square.innerHTML = ''
         } 
-        e.preventDefault();
     })
 })
+
 for (let i = 0; i < 10; i++) {
     let x = Math.floor(Math.random() * 8) + 1;
     let y = Math.floor(Math.random() * 8) + 1;
@@ -101,49 +117,66 @@ function checkBombs (x, y) {
     }
     return bombs;
 }
-// not working yet
-// function checkNearby (x, y) {
-//     // const id = 8 * (x - 1) + y;
-    
-//     if (document.querySelector('.row-' + x + '.col-' + y) !== null) {
-//         if (!checkBombs(x, y)) {
-//             document.querySelector('.row-' + x + '.col-' + y).style.background = 'grey';
-//                 // Sprawdź sąsiednich elementów o 1 mniejszych, większych i tak dalej
-//             for (let i = -1; i <= 1; i++) {
-//                 for (let j = -1; j <= 1; j++) {
-//                     if (i === 0 && j === 0) continue; // Pomijamy ten sam element
-//                     check(wiersz + i, kolumna + j);
-//                 }
+
+// function hasPlainAround (x, y) {
+//     let total = 0;
+//     for (let i = -1; i <= 1; i++) {
+//         for (let j = -1; j <= 1; j++) {
+//             if (i === 0 && j === 0) {
+//                 continue;
+//             } 
+//             if (checkBombs(x + 1, y + j)) {
+//                 total++;
 //             }
 //         }
 //     }
+//     if (total === 0)  {
+//         return true;
+//     }
+//     return false;
 // }
 
-function checkNearby(row, col) {
+function hasPlainAround (x, y) {
+    let total = 0;
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) {
+                continue;
+            } 
+            const square = document.querySelector('.row-' + x + '.col-' + y);
+            if (square.classList.contains('plain')) 
+                return true;
+        }
+    }
+    return false;
+}
+
+function checkNearby(x, y) {
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
-        // if (i === 0 && j === 0) {
-        //     continue;
-        // }
-        check(row + i, col + j);
+        if (i === 0 && j === 0) {
+            continue;
+        } 
+        check(x + i, y + j)
       }
     }
+}
 
-    function check(x, y) {
-        const square = document.querySelector('.row-' + x + '.col-' + y);
-    
-        if (square !== null) {
-            console.log('test')
-            if (!square.classList.contains('checked')) {
-            square.classList.add('checked');
-    
-                if (!square.classList.contains('bomb')) {
-                    console.log('xd')
-                    // square.classList.toggle('plain');
-                    square.style.background = 'grey'
-                    checkNearby(x, y);
-                }
+function check(x, y) {
+    console.log(`${x}, ${y}`);
+    let square = document.querySelector('.row-' + x + '.col-' + y);
+    console.log(square)
+
+    if (square !== null) {
+        // console.log('dupa')
+        if (!square.classList.contains('checked')) {
+        square.classList.add('checked');
+            if (!square.classList.contains('bomb') && !checkBombs(x, y)) {
+                console.log('xd')
+                square.classList.add('plain')
+                checkNearby(x, y);
             }
         }
     }
 }
+
