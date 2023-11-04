@@ -1,6 +1,8 @@
 const rows = 8;
 const cols = 8;
 
+let bombsPlaced = 0
+
 for (let i = 0; i < cols; i++) {
     // utworzenie wierszy
     let squaresRow = document.createElement("div");
@@ -67,12 +69,22 @@ document.querySelectorAll('.square').forEach(square => {
     })
     square.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        if (square.innerHTML === '') {
-            square.innerHTML = 'B'
-        } 
-        else {
-            square.innerHTML = ''
+
+        switch (square.innerHTML) {
+            case 'B':
+                square.innerHTML = '';
+                bombsPlaced--;
+                break;
+            case '':
+            default:
+                if (bombsPlaced < 10) {
+                    square.innerHTML = 'B';
+                    bombsPlaced++;
+                }
+                break;
         }
+        
+        console.log(bombsPlaced)
         let count = 0;
         document.querySelectorAll('.bomb').forEach(bomb => {
             if (bomb.textContent == 'B') {
