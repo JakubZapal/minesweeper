@@ -37,7 +37,6 @@ document.querySelectorAll('.square').forEach(square => {
         else {
             let squareRow = Number(square.classList[1].charAt(4))
             let squareCol = Number(square.classList[2].charAt(4))
-            console.log(`${squareRow}, ${squareCol}`)
             const bombs = checkBombs(squareRow, squareCol)
 
             if (bombs && !square.hasChildNodes()) {
@@ -58,7 +57,7 @@ document.querySelectorAll('.square').forEach(square => {
                 const squareCol = Number(square.classList[2].charAt(4))
                 const bombs = checkBombs(squareRow, squareCol)
                 // TODO: you can click on a cell that has bombs around and it exposes cells with bombs around as well (not as it should)
-                if (bombs && !square.hasChildNodes() && !square.classList.contains('bomb') && !hasPlainAround(squareRow, squareCol)) {
+                if (bombs && !square.hasChildNodes() && !square.classList.contains('bomb') && hasPlainAround(squareRow, squareCol)) {
                     const p = document.createElement("p")
                     p.textContent = bombs
                     square.append(p)
@@ -68,13 +67,23 @@ document.querySelectorAll('.square').forEach(square => {
     })
     square.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-
-        if (square.innerHTML == '') {
+        if (square.innerHTML === '') {
             square.innerHTML = 'B'
         } 
         else {
             square.innerHTML = ''
-        } 
+        }
+        let count = 0;
+        document.querySelectorAll('.bomb').forEach(bomb => {
+            if (bomb.textContent == 'B') {
+                count++;
+            }
+        })
+        if (count === 10) {
+            if(confirm('wygrales!!!!')) {
+                window.location.reload();
+            }
+        }
     })
 })
 
@@ -85,66 +94,35 @@ for (let i = 0; i < 10; i++) {
         i--;
         continue;
     }
-    console.log(`${x}, ${y}`) 
     let square = document.querySelector('.container').querySelector('.row-' + x + '.col-' + y);
     square.classList.toggle('bomb');
 }
 
 
 function checkBombs (x, y) {
-    let bombs = 0
-    if (document.querySelector('.row-' + x + '.col-' + y).nextElementSibling !== null)
-        if (document.querySelector('.row-' + x + '.col-' + y).nextElementSibling.classList.contains('bomb'))
-            bombs++;
-    if (document.querySelector('.row-' + x + '.col-' + y).previousElementSibling !== null)
-        if (document.querySelector('.row-' + x + '.col-' + y).previousElementSibling.classList.contains('bomb'))
-            bombs++;
-    if (document.querySelector('.row-' + (x-1) + '.col-' + y) !== null) {
-        if (document.querySelector('.row-' + (x-1) + '.col-' + y).classList.contains('bomb'))
-            bombs++;
-        if (document.querySelector('.row-' + (x-1) + '.col-' + y).nextElementSibling && document.querySelector('.row-' + (x-1) + '.col-' + y).nextElementSibling.classList.contains('bomb'))
-            bombs++;
-        if (document.querySelector('.row-' + (x-1) + '.col-' + y).previousElementSibling && document.querySelector('.row-' + (x-1) + '.col-' + y).previousElementSibling.classList.contains('bomb'))
-            bombs++
-    }
-    if (document.querySelector('.row-' + (x+1) + '.col-' + y) !== null) {
-        if (document.querySelector('.row-' + (x+1) + '.col-' + y).classList.contains('bomb'))
-            bombs++;
-        if (document.querySelector('.row-' + (x+1) + '.col-' + y).nextElementSibling && document.querySelector('.row-' + (x+1) + '.col-' + y).nextElementSibling.classList.contains('bomb'))
-            bombs++;
-        if (document.querySelector('.row-' + (x+1) + '.col-' + y).previousElementSibling && document.querySelector('.row-' + (x+1) + '.col-' + y).previousElementSibling.classList.contains('bomb'))
-            bombs++
-    }
-    return bombs;
-}
-
-// function hasPlainAround (x, y) {
-//     let total = 0;
-//     for (let i = -1; i <= 1; i++) {
-//         for (let j = -1; j <= 1; j++) {
-//             if (i === 0 && j === 0) {
-//                 continue;
-//             } 
-//             if (checkBombs(x + 1, y + j)) {
-//                 total++;
-//             }
-//         }
-//     }
-//     if (total === 0)  {
-//         return true;
-//     }
-//     return false;
-// }
-
-function hasPlainAround (x, y) {
-    let total = 0;
+    let bombs = 0;
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
             if (i === 0 && j === 0) {
                 continue;
             } 
-            const square = document.querySelector('.row-' + x + '.col-' + y);
-            if (square.classList.contains('plain')) 
+            const square = document.querySelector('.row-' + (x + i) + '.col-' + (y + j));
+            if (square !== null && square.classList.contains('bomb')) {
+                bombs++;
+            }
+        }
+    }
+    return bombs;
+}
+
+function hasPlainAround (x, y) {
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) {
+                continue;
+            } 
+            const square = document.querySelector('.row-' + (x + i) + '.col-' + (y + j));
+            if (square !== null && square.classList.contains('plain')) 
                 return true;
         }
     }
@@ -154,25 +132,17 @@ function hasPlainAround (x, y) {
 function checkNearby(x, y) {
     for (let i = -1; i <= 1; i++) {
       for (let j = -1; j <= 1; j++) {
-        if (i === 0 && j === 0) {
-            continue;
-        } 
         check(x + i, y + j)
       }
     }
 }
 
 function check(x, y) {
-    console.log(`${x}, ${y}`);
-    let square = document.querySelector('.row-' + x + '.col-' + y);
-    console.log(square)
-
+    const square = document.querySelector('.row-' + x + '.col-' + y);
     if (square !== null) {
-        // console.log('dupa')
         if (!square.classList.contains('checked')) {
         square.classList.add('checked');
             if (!square.classList.contains('bomb') && !checkBombs(x, y)) {
-                console.log('xd')
                 square.classList.add('plain')
                 checkNearby(x, y);
             }
