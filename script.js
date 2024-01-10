@@ -76,15 +76,13 @@ document.querySelectorAll('.square').forEach(square => {
                 bombsPlaced--;
                 break;
             case '':
-            default:
                 if (bombsPlaced < 10) {
                     square.innerHTML = 'B';
                     bombsPlaced++;
                 }
                 break;
         }
-        
-        console.log(bombsPlaced)
+
         let count = 0;
         document.querySelectorAll('.bomb').forEach(bomb => {
             if (bomb.textContent == 'B') {
