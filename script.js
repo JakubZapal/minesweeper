@@ -4,19 +4,19 @@ const cols = 8;
 let bombsPlaced = 0
 
 for (let i = 0; i < cols; i++) {
-    // utworzenie wierszy
+    // create rows
     let squaresRow = document.createElement("div");
     squaresRow.classList.add('row');
     document.querySelector('.container').append(squaresRow);
 
-    // utworzenie pól
+    // create squares
     let square = document.createElement('div');
     square.classList.add('square');
     for (let j = 0; j < rows; j++) {
         squaresRow.append(document.createElement('div'));
     }
 
-    // nadanie klas polom
+    // add class to squares
     squaresRow.querySelectorAll('div').forEach(element => element.classList.add('square'));
 }
 
@@ -47,7 +47,7 @@ document.querySelectorAll('.square').forEach(square => {
                 square.append(p)
             }
             
-            // exposing all squares with no bombs around
+            // expose all squares with no bombs around
             else {
                 checkNearby(squareRow, squareCol)
             }
@@ -58,7 +58,7 @@ document.querySelectorAll('.square').forEach(square => {
                 const squareRow = Number(square.classList[1].charAt(4))
                 const squareCol = Number(square.classList[2].charAt(4))
                 const bombs = checkBombs(squareRow, squareCol)
-                // TODO: you can click on a cell that has bombs around and it exposes cells with bombs around as well (not as it should)
+
                 if (bombs && !square.hasChildNodes() && !square.classList.contains('bomb') && hasPlainAround(squareRow, squareCol)) {
                     const p = document.createElement("p")
                     p.textContent = bombs
@@ -161,4 +161,3 @@ function check(x, y) {
         }
     }
 }
-
