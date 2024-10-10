@@ -34,4 +34,5 @@ body {
 
 .plain {
     background-color: grey;
+    cursor: auto;
 }

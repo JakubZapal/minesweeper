@@ -1,6 +1,6 @@
-const rows = 8;
-const cols = 8;
-
+const rows = 5;
+const cols = 5;
+const bombsNum = 0.16 * rows * cols
 let bombsPlaced = 0
 
 for (let i = 0; i < cols; i++) {
@@ -16,7 +16,7 @@ for (let i = 0; i < cols; i++) {
         squaresRow.append(document.createElement('div'));
     }
 
-    // add class to squares
+    // add a class to squares
     squaresRow.querySelectorAll('div').forEach(element => element.classList.add('square'));
 }
 
@@ -25,7 +25,7 @@ let col = 1;
 document.querySelectorAll('.square').forEach(square => {
     square.classList.add('row-' + row, 'col-' + col);
     col++;
-    if (col % 9 == 0) {
+    if (col % (cols + 1) == 0) {
         row++; 
         col = 1; 
     }
@@ -37,8 +37,8 @@ document.querySelectorAll('.square').forEach(square => {
             }
         }
         else {
-            let squareRow = Number(square.classList[1].charAt(4))
-            let squareCol = Number(square.classList[2].charAt(4))
+            let squareRow = getNumber(square.classList[1])
+            let squareCol = getNumber(square.classList[2])
             const bombs = checkBombs(squareRow, squareCol)
 
             if (bombs && !square.hasChildNodes()) {
@@ -55,8 +55,8 @@ document.querySelectorAll('.square').forEach(square => {
         const plainSquares = document.querySelectorAll('.checked');
         plainSquares.forEach(square => {
             if (!square.classList.contains('plain')) {
-                const squareRow = Number(square.classList[1].charAt(4))
-                const squareCol = Number(square.classList[2].charAt(4))
+                const squareRow = getNumber(square.classList[1])
+                const squareCol = getNumber(square.classList[2])
                 const bombs = checkBombs(squareRow, squareCol)
 
                 if (bombs && !square.hasChildNodes() && !square.classList.contains('bomb') && hasPlainAround(squareRow, squareCol)) {
@@ -76,7 +76,7 @@ document.querySelectorAll('.square').forEach(square => {
                 bombsPlaced--;
                 break;
             case '':
-                if (bombsPlaced < 10) {
+                if (bombsPlaced < bombsNum) {
                     square.innerHTML = 'B';
                     bombsPlaced++;
                 }
@@ -89,7 +89,7 @@ document.querySelectorAll('.square').forEach(square => {
                 count++;
             }
         })
-        if (count === 10) {
+        if (count === bombsNum) {
             if(confirm('wygrales!!!!')) {
                 window.location.reload();
             }
@@ -97,9 +97,9 @@ document.querySelectorAll('.square').forEach(square => {
     })
 })
 
-for (let i = 0; i < 10; i++) {
-    let x = Math.floor(Math.random() * 8) + 1;
-    let y = Math.floor(Math.random() * 8) + 1;
+for (let i = 0; i < bombsNum; i++) {
+    let x = Math.floor(Math.random() * rows) + 1;
+    let y = Math.floor(Math.random() * cols) + 1;
     if (document.querySelector('.row-' + x + '.col-' + y).classList.contains('bomb')) {
         i--;
         continue;
@@ -149,13 +149,19 @@ function checkNearby(x, y) {
 
 function check(x, y) {
     const square = document.querySelector('.row-' + x + '.col-' + y);
-    if (square !== null) {
-        if (!square.classList.contains('checked')) {
-        square.classList.add('checked');
-            if (!square.classList.contains('bomb') && !checkBombs(x, y)) {
-                square.classList.add('plain')
-                checkNearby(x, y);
-            }
+    if (square == null) 
+        return
+
+    if (!square.classList.contains('checked')) {
+    square.classList.add('checked');
+        if (!square.classList.contains('bomb') && !checkBombs(x, y)) {
+            square.classList.add('plain')
+            checkNearby(x, y);
         }
     }
+}
+
+// get the number from a string using regEx
+function getNumber (string) {
+    return Number(string.match(/(\d+)/)[0])
 }
