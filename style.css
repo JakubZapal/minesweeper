@@ -1,6 +1,14 @@
 body {
     margin: 0;
     background-color: black;
+    display: flex;
+    color: white;
+}
+
+
+#info {
+    margin: 2em;
+    width: 5em;
 }
 
 .container {
@@ -29,10 +37,16 @@ body {
 }
 
 .square > p {
-    color: rgb(223, 53, 132);
+   font-weight: normal;
+   color: rgb(223, 53, 132);
 }
 
 .plain {
     background-color: grey;
     cursor: auto;
+}
+
+
+div {
+    font-weight: bold;
 }

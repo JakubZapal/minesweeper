@@ -1,7 +1,9 @@
-const rows = 5;
-const cols = 5;
-const bombsNum = 0.16 * rows * cols
-let bombsPlaced = 0
+const rows = 10;
+const cols = 10;
+const bombsNum = 0.16 * rows * cols;
+let bombsPlaced = 0;
+
+document.getElementById('info').innerHTML = `bombs: ${bombsNum}`
 
 for (let i = 0; i < cols; i++) {
     // create rows
@@ -82,7 +84,7 @@ document.querySelectorAll('.square').forEach(square => {
                 }
                 break;
         }
-
+        document.getElementById('info').innerHTML = `bombs: ${bombsNum - bombsPlaced}`
         let count = 0;
         document.querySelectorAll('.bomb').forEach(bomb => {
             if (bomb.textContent == 'B') {
