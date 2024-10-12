@@ -3,6 +3,8 @@ const cols = 10;
 const bombsNum = 0.16 * rows * cols;
 let bombsPlaced = 0;
 
+const bombsCoords = []
+
 document.getElementById('info').innerHTML = `bombs: ${bombsNum}`
 
 for (let i = 0; i < cols; i++) {
@@ -33,7 +35,7 @@ document.querySelectorAll('.square').forEach(square => {
     }
 
     square.addEventListener('click', () => {
-        if (square.classList.contains('bomb')) {
+        if (isIncludedInCoords(getNumber(square.classList[1]), getNumber(square.classList[2]))) {
             if (confirm('you lose!')) {
                 window.location.reload();
             }
@@ -99,16 +101,14 @@ document.querySelectorAll('.square').forEach(square => {
     })
 })
 
-const bombsCords = []
-
 for (let i = 0; i < bombsNum; i++) {
     let x = Math.floor(Math.random() * rows) + 1;
     let y = Math.floor(Math.random() * cols) + 1;
-    if (bombsCords.includes([x, y])) {
+    if (isIncludedInCoords(x, y)) {
          i--;
          continue;
     }
-    bombsCords.push([x, y])
+    bombsCoords.push([x, y])
 }
 
 
@@ -120,7 +120,7 @@ function checkBombs (x, y) {
                 continue;
             } 
             const square = document.querySelector('.row-' + (x + i) + '.col-' + (y + j));
-            if (square !== null && bombsCords.includes([x, y]) {
+            if (square !== null && isIncludedInCoords(x + i, y + j)) {
                 bombs++;
             }
         }
@@ -157,7 +157,7 @@ function check(x, y) {
 
     if (!square.classList.contains('checked')) {
     square.classList.add('checked');
-        if (!square.classList.contains('bomb') && !checkBombs(x, y)) {
+        if (!isIncludedInCoords(x, y) && !checkBombs(x, y)) {
             square.classList.add('plain')
             checkNearby(x, y);
         }
@@ -167,4 +167,12 @@ function check(x, y) {
 // get the number from a string using regEx
 function getNumber (string) {
     return Number(string.match(/(\d+)/)[0])
+}
+
+function isIncludedInCoords (x,y) {
+     for (i = 0; i < bombsCoords.length; i++) {
+          if (bombsCoords[i][0] == x && bombsCoords[i][1] == y)
+               return true;
+     }
+     return false;
 }
