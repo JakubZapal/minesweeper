@@ -99,15 +99,16 @@ document.querySelectorAll('.square').forEach(square => {
     })
 })
 
+const bombsCords = []
+
 for (let i = 0; i < bombsNum; i++) {
     let x = Math.floor(Math.random() * rows) + 1;
     let y = Math.floor(Math.random() * cols) + 1;
-    if (document.querySelector('.row-' + x + '.col-' + y).classList.contains('bomb')) {
-        i--;
-        continue;
+    if (bombsCords.includes([x, y])) {
+         i--;
+         continue;
     }
-    let square = document.querySelector('.container').querySelector('.row-' + x + '.col-' + y);
-    square.classList.toggle('bomb');
+    bombsCords.push([x, y])
 }
 
 
@@ -119,7 +120,7 @@ function checkBombs (x, y) {
                 continue;
             } 
             const square = document.querySelector('.row-' + (x + i) + '.col-' + (y + j));
-            if (square !== null && square.classList.contains('bomb')) {
+            if (square !== null && bombsCords.includes([x, y]) {
                 bombs++;
             }
         }
