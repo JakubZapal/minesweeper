@@ -1,7 +1,7 @@
 const rows = 10;
 const cols = 10;
 const bombsNum = 0.16 * rows * cols;
-let bombsPlaced = 0;
+let bombsMarked = 0;
 
 const bombsCoords = []
 
@@ -74,30 +74,21 @@ document.querySelectorAll('.square').forEach(square => {
     square.addEventListener('contextmenu', (e) => {
         e.preventDefault();
 
-        switch (square.innerHTML) {
-            case 'B':
-                square.innerHTML = '';
-                bombsPlaced--;
-                break;
-            case '':
-                if (bombsPlaced < bombsNum) {
-                    square.innerHTML = 'B';
-                    bombsPlaced++;
-                }
-                break;
+        if (square.hasChildNodes()) {
+            bombsMarked--;
+            square.removeChild(square.firstChild)
         }
-        document.getElementById('info').innerHTML = `bombs: ${bombsNum - bombsPlaced}`
-        let count = 0;
-        document.querySelectorAll('.bomb').forEach(bomb => {
-            if (bomb.textContent == 'B') {
-                count++;
-            }
-        })
-        if (count === bombsNum) {
-            if(confirm('wygrales!!!!')) {
-                window.location.reload();
-            }
+        
+        else {
+            bombsMarked++;
+            const img = document.createElement('img')
+            img.setAttribute('src', 'flag.webp')
+            square.append(img)
         }
+        
+        // TODO: check if that wins the game 
+
+        document.getElementById('info').innerHTML = `bombs: ${bombsNum - bombsMarked}`
     })
 })
 
@@ -105,8 +96,8 @@ for (let i = 0; i < bombsNum; i++) {
     let x = Math.floor(Math.random() * rows) + 1;
     let y = Math.floor(Math.random() * cols) + 1;
     if (isIncludedInCoords(x, y)) {
-         i--;
-         continue;
+        i--;
+        continue;
     }
     bombsCoords.push([x, y])
 }
@@ -144,9 +135,9 @@ function hasPlainAround (x, y) {
 
 function checkNearby(x, y) {
     for (let i = -1; i <= 1; i++) {
-      for (let j = -1; j <= 1; j++) {
-        check(x + i, y + j)
-      }
+        for (let j = -1; j <= 1; j++) {
+            check(x + i, y + j)
+        }
     }
 }
 
@@ -170,9 +161,9 @@ function getNumber (string) {
 }
 
 function isIncludedInCoords (x,y) {
-     for (i = 0; i < bombsCoords.length; i++) {
-          if (bombsCoords[i][0] == x && bombsCoords[i][1] == y)
-               return true;
-     }
-     return false;
+    for (i = 0; i < bombsCoords.length; i++) {
+        if (bombsCoords[i][0] == x && bombsCoords[i][1] == y)
+            return true;
+    }
+    return false;
 }
