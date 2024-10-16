@@ -5,6 +5,8 @@ let bombsMarked = 0;
 
 const bombsCoords = []
 
+const markedCoords = []
+
 document.getElementById('info').innerHTML = `bombs: ${bombsNum}`
 
 for (let i = 0; i < cols; i++) {
@@ -77,6 +79,12 @@ document.querySelectorAll('.square').forEach(square => {
         if (square.hasChildNodes()) {
             bombsMarked--;
             square.removeChild(square.firstChild)
+
+            for (let i = 0; i < markedCoords.length; i++) {
+                if (markedCoords[i][0] == getNumber(square.classList[1]) && markedCoords[i][1] == getNumber(square.classList[2])) {
+                    markedCoords.splice(i, 1)
+                }
+            }
         }
         
         else {
@@ -84,9 +92,16 @@ document.querySelectorAll('.square').forEach(square => {
             const img = document.createElement('img')
             img.setAttribute('src', 'flag.webp')
             square.append(img)
+
+            markedCoords.push([getNumber(square.classList[1]), getNumber(square.classList[2])])
         }
         
-        // TODO: check if that wins the game 
+        if (bombsMarked === bombsNum && bombsCoords.sort().toString() === markedCoords.sort().toString()) {
+            const alert = document.createElement('div')
+            alert.setAttribute('id', 'winningAlert')
+            alert.append(document.createTextNode('you won!'))
+            document.querySelector('.container').append(alert)
+        }
 
         document.getElementById('info').innerHTML = `bombs: ${bombsNum - bombsMarked}`
     })
